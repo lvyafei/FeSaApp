@@ -1,0 +1,53 @@
+<ion-view view-title="统计">
+  <ion-content>
+    <div class="item item-divider">
+         chart-line
+    </div>
+    <div class="item item-text-wrap">
+        <canvas id="line" class="chart chart-line" chart-data="ChartData" chart-labels="ChartLabels" chart-legend="true" chart-series="series" chart-options="{showTooltips: true}"></canvas>
+    </div>
+	<div class="item item-divider">
+         chart-bar
+    </div>
+    <div class="item item-text-wrap">
+         <canvas id="bar" class="chart chart-bar" chart-data="ChartData" chart-labels="ChartLabels" chart-series="series">
+	     </canvas>
+    </div>
+   	<div class="item item-divider">
+         chart-doughnut
+    </div>
+    <div class="item item-text-wrap">
+         <canvas id="doughnut" class="chart chart-doughnut" chart-data="doughnutdata" chart-labels="doughnutlabels">
+         </canvas> 
+    </div>
+    <div class="item item-divider">
+         chart-radar
+    </div>
+    <div class="item item-text-wrap">
+        <canvas id="radar" class="chart chart-radar" chart-data="radardata" chart-labels="radarlabels">
+		</canvas> 
+    </div>
+    <div class="item item-divider">
+         chart-pie
+    </div>
+    <div class="item item-text-wrap">
+        <canvas id="pie" class="chart chart-pie" chart-data="piedata" chart-labels="pielabels">
+		</canvas> 
+    </div>
+    <div class="item item-divider">
+         chart-polar-area
+    </div>
+    <div class="item item-text-wrap">
+        <canvas id="polar-area" class="chart chart-polar-area" chart-data="polarareadata" chart-labels="polararealabels">
+		</canvas> 
+    </div>
+    <div class="item item-divider">
+         chart-base
+    </div>
+    <div class="item item-text-wrap">
+        <canvas id="base" class="chart-base" chart-type="basetype" chart-data="basedata" chart-labels="baselabels" chart-legend="true">
+		</canvas> 
+    </div>
+    <button class="button button-positive" ng-click="toggle()">切换</button>
+  </ion-content>
+</ion-view>
