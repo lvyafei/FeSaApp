@@ -10,6 +10,29 @@ angular.module('starter.controllers', [])
       console.log("失败:"+data);
       $ionicLoading.hide();
     });
+    $scope.doRefresh = function() {
+      News.all($scope);
+      $scope.$broadcast('scroll.refreshComplete');
+    };
+    $scope.loadMoreData = function() {
+      // $http.get('/more-items').success(function(items) {
+      //     useItems(items);
+      //     $scope.$broadcast('scroll.infiniteScrollComplete');
+      // });
+        News.all($scope).success(function(data) {
+          $scope.$broadcast('scroll.infiniteScrollComplete');
+          }).error(function(data) {
+          console.log("失败:"+data);
+          }
+        );
+       
+    };
+    $scope.moreDataCanBeLoaded = function(){
+        return true;
+    }
+    $scope.$on('stateChangeSuccess', function() {
+       $scope.loadMoreData();
+    });
 })
 
 .controller('ArticleDetailCtrl', function($scope,$stateParams,News,$ionicLoading) {
