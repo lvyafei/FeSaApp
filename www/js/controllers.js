@@ -15,12 +15,8 @@ angular.module('starter.controllers', [])
       $scope.$broadcast('scroll.refreshComplete');
     };
     $scope.loadMoreData = function() {
-      // $http.get('/more-items').success(function(items) {
-      //     useItems(items);
-      //     $scope.$broadcast('scroll.infiniteScrollComplete');
-      // });
-        News.all($scope).success(function(data) {
-          $scope.$broadcast('scroll.infiniteScrollComplete');
+        News.getmore($scope).success(function(data) {
+           $scope.$broadcast('scroll.infiniteScrollComplete');
           }).error(function(data) {
           console.log("失败:"+data);
           }
@@ -28,7 +24,7 @@ angular.module('starter.controllers', [])
        
     };
     $scope.moreDataCanBeLoaded = function(){
-        return true;
+        return false;
     }
     $scope.$on('stateChangeSuccess', function() {
        $scope.loadMoreData();

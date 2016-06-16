@@ -2,13 +2,18 @@ angular.module('starter.services', [])
 
 .factory('News', function($q,$http,$sce) {
   var pageData=new Array();
+  var lastid="";
   return {
     all: function($scope) {
       var d = $q.defer();
       var promise = d.promise;
-      $http.jsonp("https://201605111151fei.wilddogio.com/news.json?orderBy=\"title\"&limitToLast=10&print=pretty&callback=JSON_CALLBACK")
+      $http.jsonp("https://201605111151fei.wilddogio.com/news.json?orderBy=\"title\"&limitToFirst=10&print=pretty&callback=JSON_CALLBACK")
         .success(function(data) {
-            $scope.items = data;
+            pageData=data;
+            for(obj in data){
+              lastid=data[obj].title;
+            }
+            $scope.items = pageData;
             d.resolve(data);
         })
         .error(function(error) {
@@ -24,10 +29,16 @@ angular.module('starter.services', [])
       }
       return d.promise;
     },
-    getmore: function(curid){
-      $http.jsonp("https://201605111151fei.wilddogio.com/news.json?orderBy=\"title\"&limitToLast=10&print=pretty&callback=JSON_CALLBACK")
+    getmore: function($scope){
+      var d = $q.defer();
+      var promise = d.promise;
+      $http.jsonp("https://201605111151fei.wilddogio.com/news.json?orderBy=\"title\"&startAt=\""+lastid+"\"&limitToFirst=10&print=pretty&callback=JSON_CALLBACK")
         .success(function(data) {
-            $scope.items = data;
+            pageData=data;
+            for(obj in data){
+              lastid=data[obj].title;
+            }
+            $scope.items = pageData;
             d.resolve(data);
         })
         .error(function(error) {
@@ -41,6 +52,7 @@ angular.module('starter.services', [])
           promise.then(null, fn);
           return promise;
       }
+
       return d.promise;
     },
     remove: function(news) {
