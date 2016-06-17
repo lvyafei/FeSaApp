@@ -4,9 +4,9 @@
     <div class="list">
       <a ng-repeat="(key,value) in items" class="item item-thumbnail-left" href="#/tab/dash/{{value.id}}">
         <img ng-src="{{value.image}}">
-        <h2>{{ value.title}}</h2>
-        <p>{{ value.time}}</p>
-        <p>{{ value.source}}</p>
+        <h2>{{value.title}}</h2>
+        <p>{{value.time}}</p>
+        <p>{{value.source}}</p>
       </a>
     </div>
     <ion-infinite-scroll ng-if="moreDataCanBeLoaded()" on-infinite="loadMoreData()" distance="1%" ></ion-infinite-scroll>
