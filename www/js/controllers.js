@@ -1,6 +1,7 @@
 angular.module('starter.controllers', [])
 
 .controller('DashCtrl', function($scope,News,$ionicLoading) {
+    $scope.run = false;//模拟线程锁机制  防止多次请求 含义：是否正在请求。请注意，此处并非加入到了就绪队列，而是直接跳过不执行
     $ionicLoading.show({
       template: '数据加载中...'
     });
@@ -24,7 +25,7 @@ angular.module('starter.controllers', [])
        
     };
     $scope.moreDataCanBeLoaded = function(){
-        return false;
+        return $scope.hasMore;
     }
     $scope.$on('stateChangeSuccess', function() {
        $scope.loadMoreData();

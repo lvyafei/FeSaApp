@@ -2,10 +2,11 @@
   <ion-content class="padding">
   	<ion-refresher refreshing-icon="ion-loading-c" refreshing-text="获取最新资讯" pulling-text="下拉刷新数据..." on-refresh="doRefresh()"></ion-refresher>
     <div class="list">
-      <a ng-repeat="(key,value) in items" class="item item-thumbnail-left" href="#/tab/dash/{{key}}">
-        <img ng-src="{{ value.image}}">
+      <a ng-repeat="(key,value) in items" class="item item-thumbnail-left" href="#/tab/dash/{{value.id}}">
+        <img ng-src="{{value.image}}">
         <h2>{{ value.title}}</h2>
         <p>{{ value.time}}</p>
+        <p>{{ value.source}}</p>
       </a>
     </div>
     <ion-infinite-scroll ng-if="moreDataCanBeLoaded()" on-infinite="loadMoreData()" distance="1%" ></ion-infinite-scroll>
