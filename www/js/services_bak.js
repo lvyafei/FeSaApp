@@ -7,12 +7,30 @@ angular.module('starter.services', [])
       var promise = d.promise;
       if(!$scope.run){
         $scope.run=true;
-        $http.jsonp("http://lvyafei.jsp.jspee.com.cn/FSComponentCrawler/news/getNewsDataForPage?ptimestamp=0&ptype=loadmore&callback=JSON_CALLBACK")
+        $http.jsonp("https://201605111151fei.wilddogio.com/news.json?orderBy=\"timestamp\"&limitToLast=10&print=pretty&callback=JSON_CALLBACK")
         .success(function(data) {
-            $scope.pageData=data;
+            $scope.pageData=new Array();
+            for(obj in data){
+              var itm=new Object();
+              itm.id=obj;
+              itm.time=data[obj].time;
+              itm.timestamp=data[obj].timestamp;
+              itm.url=data[obj].url;
+              itm.image=data[obj].image;
+              itm.title=data[obj].title;
+              itm.source=data[obj].source;
+              $scope.pageData.push(itm);
+            }
+            $scope.pageData.sort(function(a,b){
+              return b.timestamp-a.timestamp;
+            });
             $scope.firsttimestamp=$scope.pageData[0].timestamp;
             $scope.lasttimestamp=$scope.pageData[$scope.pageData.length-1].timestamp;
-            $scope.hasMore=data.length==10?true:false;
+            $scope.pageindex=0;
+            if($scope.pageData.length==10)
+              $scope.hasMore=true;
+            else
+              $scope.hasMore=false;
             $scope.items = $scope.pageData;
             d.resolve(data);
         })
@@ -37,12 +55,29 @@ angular.module('starter.services', [])
       var d = $q.defer();
       var promise = d.promise;
       if(!$scope.run){
-        $http.jsonp("http://lvyafei.jsp.jspee.com.cn/FSComponentCrawler/news/getNewsDataForPage?ptimestamp="+$scope.lasttimestamp+"&ptype=loadmore&callback=JSON_CALLBACK")
+        $http.jsonp("https://201605111151fei.wilddogio.com/news.json?orderBy=\"timestamp\"&startAt="+$scope.lasttimestamp+"&limitToLast="+($scope.pageindex+1)*10+"&print=pretty&callback=JSON_CALLBACK")
         .success(function(data) {
-              $scope.pageData=data;
-              $scope.hasMore=data.length==10?true:false;
-              $scope.lasttimestamp=data[data.length-1].timestamp;
-              Array.prototype.push.apply($scope.items, $scope.pageData);
+              var findex=0;
+              for(obj in data){
+                var itm=new Object();
+                itm.id=obj;
+                itm.time=data[obj].time;
+                itm.timestamp=data[obj].timestamp;
+                itm.url=data[obj].url;
+                itm.image=data[obj].image;
+                itm.title=data[obj].title;
+                itm.source=data[obj].source;
+                $scope.pageData.push(itm);
+                findex=findex+1;
+              }
+              if(findex==10)
+                $scope.hasMore=true;
+              else
+                $scope.hasMore=false;
+              $scope.pageData.sort(function(a,b){
+                return b.timestamp-a.timestamp;
+              });
+              $scope.items = $scope.pageData;
               d.resolve(data);
           })
         .error(function(error) {
@@ -68,7 +103,7 @@ angular.module('starter.services', [])
     get: function($scope,newsId) {
       var d = $q.defer();
       var promise = d.promise;
-      $http.jsonp("http://lvyafei.jsp.jspee.com.cn/FSComponentCrawler/news/getNewsById?pid="+newsId+"&callback=JSON_CALLBACK")
+      $http.jsonp("https://201605111151fei.wilddogio.com/news/"+newsId+".json?callback=JSON_CALLBACK")
         .success(function(data) {
             $scope.news=data;
             $scope.newsurl=$sce.trustAsResourceUrl($scope.news.url);
@@ -86,6 +121,9 @@ angular.module('starter.services', [])
           return promise;
       }
       return d.promise;
+    },
+    getHasMore:function(){
+      return hasMore;
     }
   };
 });
