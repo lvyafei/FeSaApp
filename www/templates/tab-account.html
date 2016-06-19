@@ -1,9 +1,28 @@
-<ion-view view-title="我的">
-  <ion-content>
-    <ion-list>
-    <ion-toggle  ng-model="settings.enableFriends">
-        Enable Friends
-    </ion-toggle>
-    </ion-list>
-  </ion-content>
+<ion-view view-title="我的" cache-view="false">
+	<ion-content>
+        <div class="list padding" id="notLogin">
+            <label class="item item-input">
+                <input type="email" placeholder="邮箱" ng-model="data.username">
+            </label>
+            <label class="item item-input">
+                <input type="password" placeholder="密码" ng-model="data.password">
+            </label>
+            <button class="button button-block button-balanced" ng-click="login()">
+                <i class="icon ion-log-in"></i>&nbsp;登录
+            </button>
+
+            <button class="button button-block button-stable" ng-click="goregister()">
+                <i class="icon ion-ios-personadd-outline"></i>&nbsp;新用户注册
+            </button>
+
+            <button class="button button-outline button-assertive" ng-click="forget()" style="width:100%;">
+                <i class="icon ion-ios-help-outline"></i>&nbsp;忘记密码？
+            </button>
+        </div>
+         <ion-list>
+		    <ion-toggle  ng-model="settings.enableFriends">
+		        Enable Friends
+		    </ion-toggle>
+		 </ion-list>
+    </ion-content>
 </ion-view>
