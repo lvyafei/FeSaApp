@@ -7,30 +7,12 @@ angular.module('starter.services', [])
       var promise = d.promise;
       if(!$scope.run){
         $scope.run=true;
-        $http.jsonp("https://201605111151fei.wilddogio.com/news.json?orderBy=\"timestamp\"&limitToLast=10&print=pretty&callback=JSON_CALLBACK")
+        $http.jsonp("http://lvyafei.jsp.jspee.com.cn/FSComponentCrawler/news/getNewsDataForPage?ptimestamp=0&ptype=loadmore&callback=JSON_CALLBACK")
         .success(function(data) {
-            $scope.pageData=new Array();
-            for(obj in data){
-              var itm=new Object();
-              itm.id=obj;
-              itm.time=data[obj].time;
-              itm.timestamp=data[obj].timestamp;
-              itm.url=data[obj].url;
-              itm.image=data[obj].image;
-              itm.title=data[obj].title;
-              itm.source=data[obj].source;
-              $scope.pageData.push(itm);
-            }
-            $scope.pageData.sort(function(a,b){
-              return b.timestamp-a.timestamp;
-            });
+            $scope.pageData=data;
             $scope.firsttimestamp=$scope.pageData[0].timestamp;
             $scope.lasttimestamp=$scope.pageData[$scope.pageData.length-1].timestamp;
-            $scope.pageindex=0;
-            if($scope.pageData.length==10)
-              $scope.hasMore=true;
-            else
-              $scope.hasMore=false;
+            $scope.hasMore=data.length==10?true:false;
             $scope.items = $scope.pageData;
             d.resolve(data);
         })
@@ -55,29 +37,12 @@ angular.module('starter.services', [])
       var d = $q.defer();
       var promise = d.promise;
       if(!$scope.run){
-        $http.jsonp("https://201605111151fei.wilddogio.com/news.json?orderBy=\"timestamp\"&startAt="+$scope.lasttimestamp+"&limitToLast="+($scope.pageindex+1)*10+"&print=pretty&callback=JSON_CALLBACK")
+        $http.jsonp("http://lvyafei.jsp.jspee.com.cn/FSComponentCrawler/news/getNewsDataForPage?ptimestamp="+$scope.lasttimestamp+"&ptype=loadmore&callback=JSON_CALLBACK")
         .success(function(data) {
-              var findex=0;
-              for(obj in data){
-                var itm=new Object();
-                itm.id=obj;
-                itm.time=data[obj].time;
-                itm.timestamp=data[obj].timestamp;
-                itm.url=data[obj].url;
-                itm.image=data[obj].image;
-                itm.title=data[obj].title;
-                itm.source=data[obj].source;
-                $scope.pageData.push(itm);
-                findex=findex+1;
-              }
-              if(findex==10)
-                $scope.hasMore=true;
-              else
-                $scope.hasMore=false;
-              $scope.pageData.sort(function(a,b){
-                return b.timestamp-a.timestamp;
-              });
-              $scope.items = $scope.pageData;
+              $scope.pageData=data;
+              $scope.hasMore=data.length==10?true:false;
+              $scope.lasttimestamp=data[data.length-1].timestamp;
+              Array.prototype.push.apply($scope.items, $scope.pageData);
               d.resolve(data);
           })
         .error(function(error) {
@@ -103,7 +68,7 @@ angular.module('starter.services', [])
     get: function($scope,newsId) {
       var d = $q.defer();
       var promise = d.promise;
-      $http.jsonp("https://201605111151fei.wilddogio.com/news/"+newsId+".json?callback=JSON_CALLBACK")
+      $http.jsonp("http://lvyafei.jsp.jspee.com.cn/FSComponentCrawler/news/getNewsById?pid="+newsId+"&callback=JSON_CALLBACK")
         .success(function(data) {
             $scope.news=data;
             $scope.newsurl=$sce.trustAsResourceUrl($scope.news.url);
@@ -121,9 +86,250 @@ angular.module('starter.services', [])
           return promise;
       }
       return d.promise;
-    },
-    getHasMore:function(){
-      return hasMore;
     }
   };
+})
+
+.service('LoginService', function($q, $http) {
+
+    return {
+        loginUser: function(name, pw) {
+            var deferred = $q.defer();
+            var promise = deferred.promise;
+
+            var loginResult = new Object();
+            //ajax请求
+            $http.jsonp("http://api.gugujiankong.com/account/Login?email=" + name + "&password=" + pw + "&callback=JSON_CALLBACK")
+                .success(function(response) {
+                    loginResult = response;
+                    if (loginResult.LoginStatus == 1) {
+                        localStorage.signtoken = loginResult.SignToken;
+                        localStorage.userid = loginResult.UserId;
+
+                        //设置客户端的别名，用于定向接收消息的推送
+                        //window.plugins.jPushPlugin.setAlias("Client" + loginResult.UserId);
+
+                        var arrayObj = new Array("Tags" + loginResult.UserId);
+                        window.plugins.jPushPlugin.setTags(arrayObj);
+
+                        //上传设备ID
+                        //console.log("Begin - JPushPlugin:registrationID is " + data);
+                        //window.plugins.jPushPlugin.getRegistrationID(onGetRegistradionID);
+                        //var onGetRegistradionID = function (data) {
+                        //    try {
+                        //        console.log("JPushPlugin:registrationID is " + data);
+                        //        //ajax上传
+                        //        $http.jsonp("http://api.gugujiankong.com/account/Uploadregistrationid?userId=" + localStorage.userid + "&signToken=" + localStorage.signtoken + "&registrationid=" + data + "&callback=JSON_CALLBACK")
+                        //            .success(function (response) {
+                        //            });
+                        //    }
+                        //    catch (exception) {
+                        //        console.log(exception);
+                        //    }
+                        //};
+                        //console.log("End - JPushPlugin:registrationID is " + data);
+
+                        deferred.resolve('Welcome ' + name + '!');
+                    } else {
+                        deferred.reject('Wrong credentials.');
+                    }
+                });
+
+            promise.success = function(fn) {
+                promise.then(fn);
+                return promise;
+            }
+            promise.error = function(fn) {
+                promise.then(null, fn);
+                return promise;
+            }
+            return promise;
+        },
+
+        register: function(email, name, password) {
+            var deferred = $q.defer();
+            var promise = deferred.promise;
+            //ajax请求
+            $http.jsonp("http://api.gugujiankong.com/account/Register?email=" + email + "&username=" + name + "&password=" + password + "&callback=JSON_CALLBACK")
+                .success(function(response) {
+                    if (response == 1) {
+                        deferred.resolve('register successfully');
+                    } else {
+                        deferred.reject('Wrong register info.');
+                    }
+                });
+            promise.success = function(fn) {
+                promise.then(fn);
+                return promise;
+            }
+            promise.error = function(fn) {
+                promise.then(null, fn);
+                return promise;
+            }
+            return promise;
+        },
+        resetpassword: function(email) {
+            var deferred = $q.defer();
+            var promise = deferred.promise;
+            //ajax请求
+            $http.jsonp("http://api.gugujiankong.com/account/resetpassword?email=" + email + "&callback=JSON_CALLBACK")
+                .success(function(response) {
+                    if (response == 1) {
+                        deferred.resolve('reset password successfully');
+                    } else {
+                        deferred.reject('Wrong request');
+                    }
+                });
+            promise.success = function(fn) {
+                promise.then(fn);
+                return promise;
+            }
+            promise.error = function(fn) {
+                promise.then(null, fn);
+                return promise;
+            }
+            return promise;
+        },
+        getsetting: function($scope) {
+            var d = $q.defer();
+            var promise = d.promise;
+            //ajax请求
+            $http.jsonp("http://api.gugujiankong.com/account/GetUserSetting?userId=" + localStorage.userid + "&signToken=" + localStorage.signtoken + "&callback=JSON_CALLBACK")
+                .success(function(data) {
+                    $scope.apppush.checked = data.AppPush;
+                    $scope.smspush.checked = data.SmsPush;
+                    $scope.phonepush.checked = data.PhonePush;
+                    $scope.userphone = data.UserPhone;
+                    $scope.data.userphone = data.UserPhone;
+                    $scope.phonevalidated = data.PhoneValidated;
+                    d.resolve(data);
+                })
+                .error(function(error) {
+                    d.reject(error);
+                });
+
+            promise.success = function(fn) {
+                promise.then(fn);
+                return promise;
+            }
+            promise.error = function(fn) {
+                promise.then(null, fn);
+                return promise;
+            }
+
+            return d.promise;
+        },
+
+        sendcode: function($scope, $ionicPopup) {
+            var d = $q.defer();
+            var promise = d.promise;
+            //ajax请求
+            $http.jsonp("http://api.gugujiankong.com/account/SendPhoneValidateCode?userId=" + localStorage.userid + "&signToken=" + localStorage.signtoken + "&phone=" + $scope.data.userphone + "&callback=JSON_CALLBACK")
+                .success(function(data) {
+                    if (data.SetPushStatus != 1) {
+                        var confirmPopup = $ionicPopup.alert({
+                            title: '推送设置',
+                            template: data.SetPushStatusComment
+                        });
+                    };
+                    d.resolve(data);
+                })
+                .error(function(error) {
+                    var confirmPopup = $ionicPopup.alert({
+                        title: '推送设置',
+                        template: '验证码发送失败，请重试！'
+                    });
+                    d.reject(error);
+                });
+
+            promise.success = function(fn) {
+                promise.then(fn);
+                return promise;
+            }
+            promise.error = function(fn) {
+                promise.then(null, fn);
+                return promise;
+            }
+
+            return d.promise;
+        },
+
+        finalbind: function($scope, $ionicPopup) {
+            var d = $q.defer();
+            var promise = d.promise;
+            //ajax请求
+            $http.jsonp("http://api.gugujiankong.com/account/FinalBind?userId=" + localStorage.userid + "&phone=" + $scope.data.userphone + "&code=" + $scope.data.code + "&signToken=" + localStorage.signtoken + "&callback=JSON_CALLBACK")
+                .success(function(data) {
+                    if (data.SetPushStatus != 1) {
+                        var confirmPopup = $ionicPopup.alert({
+                            title: '推送设置',
+                            template: data.SetPushStatusComment
+                        });
+                    };
+                    d.resolve(data);
+                })
+                .error(function(error) {
+                    var confirmPopup = $ionicPopup.alert({
+                        title: '推送设置',
+                        template: '手机号码绑定失败，请重试！'
+                    });
+                    d.reject(error);
+                });
+
+            promise.success = function(fn) {
+                promise.then(fn);
+                return promise;
+            }
+            promise.error = function(fn) {
+                promise.then(null, fn);
+                return promise;
+            }
+
+            return d.promise;
+        },
+        switchnotify: function($scope, $ionicPopup, type) {
+            var d = $q.defer();
+            var promise = d.promise;
+            var value;
+            if (type == 1) {
+                value = $scope.apppush.checked;
+            }
+            if (type == 2) {
+                value = $scope.smspush.checked;
+            }
+            if (type == 3) {
+                value = $scope.phonepush.checked;
+            }
+            //ajax请求
+            $http.jsonp("http://api.gugujiankong.com/account/SetPush?userId=" + localStorage.userid + "&signToken=" + localStorage.signtoken + "&type=" + type + "&value=" + value + "&callback=JSON_CALLBACK")
+                .success(function(data) {
+                    if (data.SetPushStatus != 1) {
+                        var confirmPopup = $ionicPopup.alert({
+                            title: '推送设置',
+                            template: data.SetPushStatusComment
+                        });
+                    };
+                    d.resolve(data);
+                })
+                .error(function(error) {
+                    var confirmPopup = $ionicPopup.alert({
+                        title: '推送设置',
+                        template: '手机号码绑定失败，请重试！'
+                    });
+                    d.reject(error);
+                });
+
+            promise.success = function(fn) {
+                promise.then(fn);
+                return promise;
+            }
+            promise.error = function(fn) {
+                promise.then(null, fn);
+                return promise;
+            }
+
+            return d.promise;
+        }
+    }
 });
+
