@@ -82,50 +82,39 @@ angular.module('starter.controllers', [])
   };
 })
 
-.controller('AccountCtrl', function($scope,LoginService) {
-    $scope.settings = {
-      enableFriends: true
-    };
-    $scope.data = {};
-    $scope.remove = function(site) {
-        var confirmPopup = $ionicPopup.confirm({
-            title: '删除网站',
-            template: '确认删除您选定的监控网站吗？'
-        });
-        confirmPopup.then(function(res) {
-            if (res) {
-                Websites.remove($scope.sites, site).success(function(data) {
+.controller('AccountCtrl', function($scope,$state,LoginService) {
+    var islogin=localStorage.haslogin;
+    debugger;
+    if(islogin==1){//已登录
 
-
-                }).error(function(data) {});
-            } else {
-
-            }
-        });
+    }else{//未登录
+        $state.go("tab.login");
     }
+})
 
+.controller('LoginCtrl', function($scope,LoginService) {
     $scope.login = function() {
-        LoginService.loginUser($scope.data.username, $scope.data.password).success(function(data) {
-            //登录成功
-            localStorage.haslogin = 1;
-            $ionicLoading.hide();
-            $state.go("tab.accountlistitem");
+          LoginService.loginUser($scope.data.username, $scope.data.password).success(function(data) {
+              //登录成功
+              localStorage.haslogin = 1;
+              $ionicLoading.hide();
+              $state.go("tab.accountlistitem");
 
-        }).error(function(data) {
-            localStorage.haslogin = 0
-            var alertPopup = $ionicPopup.alert({
-                title: '登录失败',
-                template: '请检查您填写的登陆信息！'
-            });
-        });
-    }
+          }).error(function(data) {
+              localStorage.haslogin = 0
+              var alertPopup = $ionicPopup.alert({
+                  title: '登录失败',
+                  template: '请检查您填写的登陆信息！'
+              });
+          });
+      }
 
-    $scope.forget = function() {
-        //进行API提交后，发送邮件，发送成功后，进行alert提醒
-        $state.go('resetpassword');
-    }
+      $scope.forget = function() {
+          //进行API提交后，发送邮件，发送成功后，进行alert提醒
+          $state.go('resetpassword');
+      }
 
-    $scope.goregister = function() {
-        $state.go('register');
-    }
+      $scope.goregister = function() {
+          $state.go('register');
+      }
 });
