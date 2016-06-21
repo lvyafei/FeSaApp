@@ -42,6 +42,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','c
 
   .state('tab.dash', {
     url: '/dash',
+    cache: false,
     views: {
       'tab-dash': {
         templateUrl: 'templates/tab-dash.html',
@@ -51,6 +52,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','c
   })
   .state('tab.news-detail', {
       url: '/dash/:newsid',
+      cache: false,
       views: {
         'tab-dash': {
           templateUrl: 'templates/news-detail.html',
@@ -60,6 +62,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','c
     })
   .state('tab.chats', {
       url: '/chats',
+      cache: false,
       views: {
         'tab-chats': {
           templateUrl: 'templates/tab-chats.html',
@@ -69,6 +72,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','c
     })
   .state('tab.account', {
     url: '/account',
+    cache: false,
     views: {
       'tab-account': {
         templateUrl: 'templates/tab-account.html',
@@ -78,8 +82,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services','c
   })
   .state('tab.login',{
     url: '/login',
+    cache: false,
     views: {
-      'tab-login': {
+      'tab-account': {
         templateUrl: 'templates/tab-login.html',
         controller: 'LoginCtrl'
       }

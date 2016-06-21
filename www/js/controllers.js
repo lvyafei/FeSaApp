@@ -51,7 +51,11 @@ angular.module('starter.controllers', [])
   });
 })
 
-.controller('ChatsCtrl', function($scope) {
+.controller('ChatsCtrl', function($scope,$state) {
+  var islogin=localStorage.haslogin;
+  if(islogin!=1){//已登录
+    $state.go("tab.account");
+  }
   $scope.ChartLabels = ["January", "February", "March", "April", "May", "June", "July"];
   $scope.series = ['Series A', 'Series B'];
   $scope.ChartData = [
@@ -84,29 +88,27 @@ angular.module('starter.controllers', [])
 
 .controller('AccountCtrl', function($scope,$state,LoginService) {
     var islogin=localStorage.haslogin;
-    debugger;
-    if(islogin==1){//已登录
-
-    }else{//未登录
-        $state.go("tab.login");
+    if(islogin!=1){
+       $state.go("tab.login");
     }
 })
 
 .controller('LoginCtrl', function($scope,LoginService) {
     $scope.login = function() {
-          LoginService.loginUser($scope.data.username, $scope.data.password).success(function(data) {
-              //登录成功
-              localStorage.haslogin = 1;
-              $ionicLoading.hide();
-              $state.go("tab.accountlistitem");
+        localStorage.haslogin = 1;
+        // LoginService.loginUser($scope.data.username, $scope.data.password).success(function(data) {
+        //     //登录成功
+        //     localStorage.haslogin = 1;
+        //     $ionicLoading.hide();
+        //     $state.go("tab.accountlistitem");
 
-          }).error(function(data) {
-              localStorage.haslogin = 0
-              var alertPopup = $ionicPopup.alert({
-                  title: '登录失败',
-                  template: '请检查您填写的登陆信息！'
-              });
-          });
+        // }).error(function(data) {
+        //     localStorage.haslogin = 0
+        //     var alertPopup = $ionicPopup.alert({
+        //         title: '登录失败',
+        //         template: '请检查您填写的登陆信息！'
+        //     });
+        // });
       }
 
       $scope.forget = function() {
