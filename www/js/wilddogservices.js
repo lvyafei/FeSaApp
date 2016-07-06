@@ -1,13 +1,13 @@
-angular.module('starter.services', [])
+angular.module('starter.wilddogservices', [])
 
-.factory('News', function($q,$http,$sce) {
+.factory('widdogNews', function($q,$http,$sce,webapi) {
   return {
     all: function($scope) {
       var d = $q.defer();
       var promise = d.promise;
       if(!$scope.run){
         $scope.run=true;
-        $http.jsonp("https://201605111151fei.wilddogio.com/news.json?orderBy=\"timestamp\"&limitToLast=10&print=pretty&callback=JSON_CALLBACK")
+        $http.jsonp(webapi.wilddog+webapi.wilddogNewsAll)
         .success(function(data) {
             $scope.pageData=new Array();
             for(obj in data){
@@ -55,7 +55,7 @@ angular.module('starter.services', [])
       var d = $q.defer();
       var promise = d.promise;
       if(!$scope.run){
-        $http.jsonp("https://201605111151fei.wilddogio.com/news.json?orderBy=\"timestamp\"&startAt="+$scope.lasttimestamp+"&limitToLast="+($scope.pageindex+1)*10+"&print=pretty&callback=JSON_CALLBACK")
+        $http.jsonp(webapi.wilddog+webapi.wilddogNewsLoadMore($scope.lasttimestamp,$scope.pageindex))
         .success(function(data) {
               var findex=0;
               for(obj in data){
@@ -103,7 +103,7 @@ angular.module('starter.services', [])
     get: function($scope,newsId) {
       var d = $q.defer();
       var promise = d.promise;
-      $http.jsonp("https://201605111151fei.wilddogio.com/news/"+newsId+".json?callback=JSON_CALLBACK")
+      $http.jsonp(webapi.wilddog+webapi.wilddogNewsDetail(newsId))
         .success(function(data) {
             $scope.news=data;
             $scope.newsurl=$sce.trustAsResourceUrl($scope.news.url);

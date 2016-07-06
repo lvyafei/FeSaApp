@@ -1,14 +1,14 @@
 angular.module('starter.services', [])
 
-.factory('News', function($q,$http,$sce) {
+.factory('News', function($q,$http,$sce,webapi) {
   return {
     all: function($scope) {
       var d = $q.defer();
       var promise = d.promise;
       if(!$scope.run){
         $scope.run=true;
-        $http.jsonp("http://lvyafei.jsp.jspee.com.cn/FSComponentCrawler/news/getNewsDataForPage?ptimestamp=0&ptype=loadmore&callback=JSON_CALLBACK")
-        .success(function(data) {
+        $http.jsonp(webapi.hosts+webapi.dbNewsAll)
+        .success(function(data,status,headers,config) {
             $scope.pageData=data;
             $scope.firsttimestamp=$scope.pageData[0].timestamp;
             $scope.lasttimestamp=$scope.pageData[$scope.pageData.length-1].timestamp;
@@ -16,8 +16,11 @@ angular.module('starter.services', [])
             $scope.items = $scope.pageData;
             d.resolve(data);
         })
-        .error(function(error) {
-            d.reject(error);
+        .error(function(data,status,headers,config) {
+            if(status!=200){
+                webapi.getAccessToken();
+            }
+            d.reject(status);
         });
       }
       promise.success = function(fn) {
@@ -37,7 +40,7 @@ angular.module('starter.services', [])
       var d = $q.defer();
       var promise = d.promise;
       if(!$scope.run){
-        $http.jsonp("http://lvyafei.jsp.jspee.com.cn/FSComponentCrawler/news/getNewsDataForPage?ptimestamp="+$scope.lasttimestamp+"&ptype=loadmore&callback=JSON_CALLBACK")
+        $http.jsonp(webapi.hosts+webapi.dbNewsLoadMore($scope.lasttimestamp))
         .success(function(data) {
               $scope.pageData=data;
               $scope.hasMore=data.length==10?true:false;
@@ -68,7 +71,7 @@ angular.module('starter.services', [])
     get: function($scope,newsId) {
       var d = $q.defer();
       var promise = d.promise;
-      $http.jsonp("http://lvyafei.jsp.jspee.com.cn/FSComponentCrawler/news/getNewsById?pid="+newsId+"&callback=JSON_CALLBACK")
+      $http.jsonp(webapi.hosts+webapi.dbNewsDetail(newsId))
         .success(function(data) {
             $scope.news=data;
             $scope.newsurl=$sce.trustAsResourceUrl($scope.news.url);
