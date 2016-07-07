@@ -7,7 +7,8 @@ angular.module('starter.services', [])
       var promise = d.promise;
       if(!$scope.run){
         $scope.run=true;
-        $http.jsonp(webapi.hosts+webapi.dbNewsAll)
+        var _dd="d5bc3ba7-a46f-48e9-946f-4faad5296ec8";
+        $http.jsonp(webapi.hosts+webapi.dbNewsAll+_dd)
         .success(function(data,status,headers,config) {
             $scope.pageData=data;
             $scope.firsttimestamp=$scope.pageData[0].timestamp;
