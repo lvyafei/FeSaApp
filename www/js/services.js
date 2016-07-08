@@ -7,10 +7,10 @@ angular.module('starter.services', [])
       var promise = d.promise;
       if(!$scope.run){
         $scope.run=true;
-        var _dd="d5bc3ba7-a46f-48e9-946f-4faad5296ec8";
-        $http.jsonp(webapi.hosts+webapi.dbNewsAll+_dd)
+        webapi.getAccessToken();
+        $http.jsonp(webapi.hosts+webapi.dbNewsAll())
         .success(function(data,status,headers,config) {
-            $scope.pageData=data;
+            $scope.pageData=data.datas;
             $scope.firsttimestamp=$scope.pageData[0].timestamp;
             $scope.lasttimestamp=$scope.pageData[$scope.pageData.length-1].timestamp;
             $scope.hasMore=data.length==10?true:false;
