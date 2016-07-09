@@ -1,8 +1,25 @@
 <ion-view view-title="我的" cache-view="false">
 	<ion-content>
+		<div class="row">
+			  <div class="col col-100" style="text-align: center">
+			  	<img src="img/user.png">
+			  	<p style="font-size: large;">
+			  		<span  contenteditable="false" ng-bind="data.userName"></span>
+			  	</p>
+			  </div>
+		 </div>
          <ion-list>
-		    <ion-toggle  ng-model="settings.enableFriends">
-		        Enable Friends
+		    <ion-toggle ng-model="settings.enableFriends">
+		        <i class="icon ion-settings"></i>&nbsp;消息推送
+		    </ion-toggle>
+		    <ion-toggle>
+		        <i class="icon ion-settings"></i>&nbsp;设置
+		    </ion-toggle>
+		    <ion-toggle>
+		        <i class="icon ion-settings"></i>&nbsp;设置
+		    </ion-toggle>
+		    <ion-toggle>
+		        <i class="icon ion-settings"></i>&nbsp;设置
 		    </ion-toggle>
 		 </ion-list>
     </ion-content>

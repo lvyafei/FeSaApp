@@ -13,35 +13,59 @@ angular.module('starter.webapi', [])
 		//hosts:"http://localhost:9091",
 		wilddog:"https://201605111151fei.wilddogio.com",
 
-		getAccessToken:function(){
+		getAccessTokenCrawler:function(){
 			var loctoken=$window.localStorage["loctoken_crawler"];
-			var locexpires=$window.localStorage["locexpires_crawler"];
-			var curtime=(new Date).getTime();
-			if((loctoken==null||loctoken=="")||(locexpires<curtime)){
-				$http({
+			var locexpires=$window.localStorage["locexpiration_crawler"];
+			var curtime=(new Date()).getTime();
+			if((loctoken==null||loctoken=="")||parseInt(locexpires)<curtime){//获取token
+				$.ajax({
+					type:'GET',
 					url:_hosts+_crawler_gettoken,
-					method:'GET'
-				}).success(function(data,header,config,status){
-					$window.localStorage["loctoken_crawler"]=data.value;
-					$window.localStorage["locexpires_crawler"]=data.expiresIn;
-				}).error(function(data,header,config,status){
-					console.log("获取token错误");
+					async:false,
+					success:function(data,header,config,status){
+						$window.localStorage["loctoken_crawler"]=data.value;
+						$window.localStorage["locexpiration_crawler"]=data.expiration;
+						$window.localStorage["locrefresh_crawler"]=data.refreshToken.value;
+					},
+					error:function(data,header,config,status){
+						console.log("获取token错误");
+					}
+				});
+			}
+		},
+		getAccessTokenPortal:function(){
+			var loctoken=$window.localStorage["loctoken_portal"];
+			var locexpires=$window.localStorage["locexpiration_portal"];
+			var curtime=(new Date()).getTime();
+			if((loctoken==null||loctoken=="")||parseInt(locexpires)<curtime){//获取token
+				$.ajax({
+					type:'GET',
+					url:_hosts+_portal_gettoken,
+					async:false,
+					success:function(data,header,config,status){
+						$window.localStorage["loctoken_portal"]=data.access_token;
+						$window.localStorage["locexpiration_portal"]=(new Date()).getTime()+data.expires_in*1000;
+						$window.localStorage["locrefresh_portal"]=data.refresh_token;
+					},
+					error:function(data,header,config,status){
+						console.log("获取token错误");
+					}
 				});
 			}
 		},
 		/**用户登录**/
 		loginService:function(){
-			return "/portal/api/users/login?access_token="+$window.localStorage["loctoken"];
+			return "/portal/api/users/login?access_token="+$window.localStorage["loctoken_portal"];
 		},
 		/**获取新闻数据库Api**/
 		dbNewsAll:function(){
 			return "/crawler/api/news/getNewsDataForPage?ptimestamp=0&ptype=loadmore&callback=JSON_CALLBACK&access_token="+$window.localStorage["loctoken_crawler"];
 		},
 		dbNewsLoadMore:function(lastime){
-			return "/crawler/api/news/getNewsDataForPage?ptimestamp="+lastime+"&ptype=loadmore&callback=JSON_CALLBACK&?access_token="+$window.localStorage["loctoken_crawler"];
+			return "/crawler/api/news/getNewsDataForPage?ptimestamp="+lastime+"&ptype=loadmore&callback=JSON_CALLBACK&access_token="+$window.localStorage["loctoken_crawler"];
 		},
 		dbNewsDetail:function(nid){
-			return "/crawler/api/news/getNewsById?pid="+nid+"&callback=JSON_CALLBACK&?access_token="+$window.localStorage["loctoken_crawler"];
+			return "/crawler/api/news/getNewsById?pid="+nid+"&callback=JSON_CALLBACK&access_token="+$window.localStorage["loctoken_crawler"];
 		},
 		/**获取新闻wilddogApi**/
 		wilddogNewsAll:function(){

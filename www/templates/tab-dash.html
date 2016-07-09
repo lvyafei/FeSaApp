@@ -1,5 +1,13 @@
 <ion-view view-title="首页">
-  <ion-content class="padding">
+  <div class="tabs-striped tabs-top tabs-background-positive tabs-color-light">
+      <div class="tabs">
+        <a class="tab-item active" href="#">热门</a>
+        <a class="tab-item" href="#">会计</a>
+        <a class="tab-item" href="#">计算机</a>
+        <a class="tab-item" href="#">娱乐</a>
+      </div>
+    </div>
+  <ion-content class="padding" style="margin-top:45px">
   	<ion-refresher refreshing-icon="ion-loading-c" refreshing-text="获取最新资讯" pulling-text="下拉刷新数据..." on-refresh="doRefresh()"></ion-refresher>
     <div class="list">
       <a ng-repeat="item in items" class="item item-thumbnail-left" href="#/tab/dash/{{item.id}}">

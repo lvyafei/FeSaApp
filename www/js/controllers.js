@@ -91,24 +91,26 @@ angular.module('starter.controllers', [])
     if(islogin!=1){
        $state.go("tab.login");
     }
+    $scope.data=JSON.parse(localStorage.userinfo);
 })
 
-.controller('LoginCtrl', function($scope,LoginService) {
+.controller('LoginCtrl', function($scope,LoginService,$state,$ionicLoading) {
+    $scope.data = {};
     $scope.login = function() {
-        localStorage.haslogin = 1;
-        // LoginService.loginUser($scope.data.username, $scope.data.password).success(function(data) {
-        //     //登录成功
-        //     localStorage.haslogin = 1;
-        //     $ionicLoading.hide();
-        //     $state.go("tab.accountlistitem");
+        $ionicLoading.show();
+        LoginService.loginUser($scope.data.username, $scope.data.password).success(function(data) {
+            //登录成功
+            localStorage.haslogin = 1;
+            $ionicLoading.hide();
+            $state.go("tab.account");
 
-        // }).error(function(data) {
-        //     localStorage.haslogin = 0
-        //     var alertPopup = $ionicPopup.alert({
-        //         title: '登录失败',
-        //         template: '请检查您填写的登陆信息！'
-        //     });
-        // });
+        }).error(function(data) {
+            localStorage.haslogin = 0
+            var alertPopup = $ionicPopup.alert({
+                title: '登录失败',
+                template: '请检查您填写的登陆信息！'
+            });
+        });
       }
 
       $scope.forget = function() {

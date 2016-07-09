@@ -7,7 +7,7 @@ angular.module('starter.services', [])
       var promise = d.promise;
       if(!$scope.run){
         $scope.run=true;
-        webapi.getAccessToken();
+        webapi.getAccessTokenCrawler();
         $http.jsonp(webapi.hosts+webapi.dbNewsAll())
         .success(function(data,status,headers,config) {
             $scope.pageData=data.datas;
@@ -41,9 +41,10 @@ angular.module('starter.services', [])
       var d = $q.defer();
       var promise = d.promise;
       if(!$scope.run){
+        webapi.getAccessTokenCrawler();
         $http.jsonp(webapi.hosts+webapi.dbNewsLoadMore($scope.lasttimestamp))
         .success(function(data) {
-              $scope.pageData=data;
+              $scope.pageData=data.datas;
               $scope.hasMore=data.length==10?true:false;
               $scope.lasttimestamp=data[data.length-1].timestamp;
               Array.prototype.push.apply($scope.items, $scope.pageData);
@@ -72,9 +73,10 @@ angular.module('starter.services', [])
     get: function($scope,newsId) {
       var d = $q.defer();
       var promise = d.promise;
+      webapi.getAccessTokenCrawler();
       $http.jsonp(webapi.hosts+webapi.dbNewsDetail(newsId))
         .success(function(data) {
-            $scope.news=data;
+            $scope.news=data.datas;
             $scope.newsurl=$sce.trustAsResourceUrl($scope.news.url);
             d.resolve(data);
         })
@@ -94,51 +96,35 @@ angular.module('starter.services', [])
   };
 })
 
-.service('LoginService', function($q, $http) {
-
+.service('LoginService', function($q, $http,webapi) {
     return {
-        loginUser: function(name, pw) {
+        loginUser: function(name, pwd) {
             var deferred = $q.defer();
             var promise = deferred.promise;
-
             var loginResult = new Object();
+            webapi.getAccessTokenPortal();
             //ajax请求
-            $http.jsonp("http://api.gugujiankong.com/account/Login?email=" + name + "&password=" + pw + "&callback=JSON_CALLBACK")
-                .success(function(response) {
-                    loginResult = response;
-                    if (loginResult.LoginStatus == 1) {
-                        localStorage.signtoken = loginResult.SignToken;
-                        localStorage.userid = loginResult.UserId;
-
-                        //设置客户端的别名，用于定向接收消息的推送
-                        //window.plugins.jPushPlugin.setAlias("Client" + loginResult.UserId);
-
-                        var arrayObj = new Array("Tags" + loginResult.UserId);
-                        window.plugins.jPushPlugin.setTags(arrayObj);
-
-                        //上传设备ID
-                        //console.log("Begin - JPushPlugin:registrationID is " + data);
-                        //window.plugins.jPushPlugin.getRegistrationID(onGetRegistradionID);
-                        //var onGetRegistradionID = function (data) {
-                        //    try {
-                        //        console.log("JPushPlugin:registrationID is " + data);
-                        //        //ajax上传
-                        //        $http.jsonp("http://api.gugujiankong.com/account/Uploadregistrationid?userId=" + localStorage.userid + "&signToken=" + localStorage.signtoken + "&registrationid=" + data + "&callback=JSON_CALLBACK")
-                        //            .success(function (response) {
-                        //            });
-                        //    }
-                        //    catch (exception) {
-                        //        console.log(exception);
-                        //    }
-                        //};
-                        //console.log("End - JPushPlugin:registrationID is " + data);
-
-                        deferred.resolve('Welcome ' + name + '!');
-                    } else {
+            $.ajax({
+                type:'post',
+                url:webapi.hosts+webapi.loginService(),
+                data:{
+                    "username":name,
+                    "password":pwd
+                },
+                dataType:'json',
+                success:function(data){
+                    if(data.datas!=null){
+                         localStorage.userinfo = JSON.stringify(data.datas);
+                         console.log("欢迎："+JSON.parse(localStorage.userinfo).userName);
+                         deferred.resolve('Welcome ' + data.datas.userName + '!');
+                    }else{
                         deferred.reject('Wrong credentials.');
                     }
-                });
-
+                },
+                error:function(data){
+                    deferred.reject('Login Error');
+                }
+            });
             promise.success = function(fn) {
                 promise.then(fn);
                 return promise;
@@ -149,7 +135,6 @@ angular.module('starter.services', [])
             }
             return promise;
         },
-
         register: function(email, name, password) {
             var deferred = $q.defer();
             var promise = deferred.promise;
