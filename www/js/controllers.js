@@ -1,6 +1,26 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope,News,webapi,$ionicLoading) {
+.controller('DashCtrl', function($scope,News,webapi,$ionicLoading,$ionicModal) {
+    $scope.data = {};
+    $("#maintabs").removeClass("tabs-item-hide");
+    $ionicModal.fromTemplateUrl('my-modal.html', {
+      scope: $scope,
+      animation: 'slide-in-up'
+    }).then(function(modal) {
+      $scope.modal = modal;
+    });
+    $scope.$on('$destroy', function() {
+      $scope.modal.remove();
+    });
+    $scope.$on('modal.hidden', function() {
+       $(".ion-android-radio-button-off span").each(function(i,item){
+          $scope.CateLabels.removeByName($(item).text());
+       });
+       $scope.data={};
+    });
+    $scope.$on('modal.removed', function() {
+      // Execute action
+    });
     $scope.run = false;//模拟线程锁机制  防止多次请求 含义：是否正在请求。请注意，此处并非加入到了就绪队列，而是直接跳过不执行
     $ionicLoading.show({
       template: '数据加载中...'
@@ -32,13 +52,36 @@ angular.module('starter.controllers', [])
     };
     $scope.moreDataCanBeLoaded = function(){
         return $scope.hasMore;
-    }
+    };
     $scope.$on('stateChangeSuccess', function() {
        $scope.loadMoreData();
     });
+    $scope.CateLabels = [{"id":1,"category":"热门"},{"id":2,"category":"会计"},{"id":3,"category":"计算机"},{"id":4,"category":"娱乐"},{"id":5,"category":"育儿"}];
+    $scope.changeCate=function(t){
+        if(t==100){
+            $scope.modal.show();
+        }else{
+          $("a.itemcate").removeClass("active");
+          $("#cate"+t).addClass("active");
+        }
+    };
+    $scope.setCate=function(t){
+      if($("#setcate"+t).hasClass("ion-android-checkmark-circle")){
+        $("#setcate"+t).removeClass("ion-android-checkmark-circle");
+        $("#setcate"+t).addClass("ion-android-radio-button-off");
+      }else{
+        $("#setcate"+t).removeClass("ion-android-radio-button-off");
+        $("#setcate"+t).addClass("ion-android-checkmark-circle");
+      }
+    };
+    $scope.addCate=function(){
+       var sear_txt=$scope.data.searchCate;
+       $scope.CateLabels.push({"id":(new Date).getTime(),"category":sear_txt});
+    }
 })
 
 .controller('ArticleDetailCtrl', function($scope,$stateParams,News,$ionicLoading) {
+  $("#maintabs").addClass("tabs-item-hide");
   $ionicLoading.show({
       template: '数据加载中...'
   });

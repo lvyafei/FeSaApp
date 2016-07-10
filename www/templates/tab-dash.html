@@ -1,12 +1,35 @@
 <ion-view view-title="首页">
+  <script id="my-modal.html" type="text/ng-template">
+    <ion-modal-view>
+      <ion-header-bar>
+        <h1 class="title">频道管理</h1>
+      </ion-header-bar>
+      <ion-content>
+        <button class="button button-large icon-left ion-android-checkmark-circle" ng-repeat="cate in CateLabels" ng-click="setCate(cate.id)" ng-disabled="cate.category=='热门'" id="setcate{{cate.id}}">
+           <span ng-bind="cate.category"></span>
+        </button>
+        <div class="list list-inset">
+          <label class="item item-input">
+            <i class="icon ion-search placeholder-icon"></i>
+            <input type="text" placeholder="Search" ng-model="data.searchCate">
+          </label>
+        </div>
+        <button class="button button-large icon-left ion-android-add-circle" ng-click="addCate()">
+           <span ng-bind="data.searchCate"></span>
+        </button>
+      </ion-content>
+    </ion-modal-view>
+  </script>
   <div class="tabs-striped tabs-top tabs-background-positive tabs-color-light">
       <div class="tabs">
-        <a class="tab-item active" href="#">热门</a>
-        <a class="tab-item" href="#">会计</a>
-        <a class="tab-item" href="#">计算机</a>
-        <a class="tab-item" href="#">娱乐</a>
+        <a class="tab-item itemcate" ng-repeat="cate in CateLabels" ng-class="{true:'active',false:'inactive'}[cate.category=='热门']" ng-click="changeCate(cate.id)" id="cate{{cate.id}}">
+          <span style="font-size: large;" ng-bind="cate.category"></span>
+        </a>
+        <a class="tab-item" ng-click="changeCate(100)">
+          <span style="font-size: large;">更多</span>
+        </a>
       </div>
-    </div>
+  </div>
   <ion-content class="padding" style="margin-top:45px">
   	<ion-refresher refreshing-icon="ion-loading-c" refreshing-text="获取最新资讯" pulling-text="下拉刷新数据..." on-refresh="doRefresh()"></ion-refresher>
     <div class="list">
