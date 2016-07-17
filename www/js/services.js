@@ -8,7 +8,7 @@ angular.module('starter.services', [])
       if(!$scope.run){
         $scope.run=true;
         webapi.getAccessTokenCrawler();
-        $http.jsonp(webapi.hosts+webapi.dbNewsAll())
+        $http.jsonp(webapi.dbNewsAll())
         .success(function(data,status,headers,config) {
             $scope.pageData=data.datas;
             $scope.firsttimestamp=$scope.pageData[0].timestamp;
@@ -42,7 +42,7 @@ angular.module('starter.services', [])
       var promise = d.promise;
       if(!$scope.run){
         webapi.getAccessTokenCrawler();
-        $http.jsonp(webapi.hosts+webapi.dbNewsLoadMore($scope.lasttimestamp))
+        $http.jsonp(webapi.dbNewsLoadMore($scope.lasttimestamp))
         .success(function(data) {
               $scope.pageData=data.datas;
               $scope.hasMore=data.length==10?true:false;
@@ -74,7 +74,7 @@ angular.module('starter.services', [])
       var d = $q.defer();
       var promise = d.promise;
       webapi.getAccessTokenCrawler();
-      $http.jsonp(webapi.hosts+webapi.dbNewsDetail(newsId))
+      $http.jsonp(webapi.dbNewsDetail(newsId))
         .success(function(data) {
             $scope.news=data.datas;
             $scope.newsurl=$sce.trustAsResourceUrl($scope.news.url);
@@ -92,6 +92,50 @@ angular.module('starter.services', [])
           return promise;
       }
       return d.promise;
+    },
+    updateRead:function(nid,uid,tid){
+         $.ajax({
+            type:'post',
+            url:webapi.updateRead(),
+            data:{
+                "newsid":nid,
+                "userid":uid,
+                "typeid":tid
+            },
+            dataType:'json',
+            success:function(data){
+                if(data.datas!=null){
+                     alert("收藏成功");
+                }else{
+                    alert("收藏失败");
+                }
+            },
+            error:function(data){
+                alert('updateRead Error');
+            }
+        });
+    },
+    updateComment:function(nid,uid,comment){
+        $.ajax({
+            type:'post',
+            url:webapi.updateComment(),
+            data:{
+                "newsid":nid,
+                "userid":uid,
+                "commentInfo":comment
+            },
+            dataType:'json',
+            success:function(data){
+                if(data.datas!=null){
+                     alert("评论成功");
+                }else{
+                    alert("评论失败");
+                }
+            },
+            error:function(data){
+                alert('updateComment Error');
+            }
+        });
     }
   };
 })
@@ -106,7 +150,7 @@ angular.module('starter.services', [])
             //ajax请求
             $.ajax({
                 type:'post',
-                url:webapi.hosts+webapi.loginService(),
+                url:webapi.loginService(),
                 data:{
                     "username":name,
                     "password":pwd

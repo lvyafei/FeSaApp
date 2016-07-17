@@ -82,6 +82,7 @@ angular.module('starter.controllers', [])
 
 .controller('ArticleDetailCtrl', function($scope,$stateParams,News,$ionicLoading) {
   $("#maintabs").addClass("tabs-item-hide");
+  $scope.data = {};
   $ionicLoading.show({
       template: '数据加载中...'
   });
@@ -92,6 +93,21 @@ angular.module('starter.controllers', [])
       console.log("失败:"+data);
       $ionicLoading.hide();
   });
+  $scope.fav=function(){
+    var userinfo=JSON.parse(localStorage.userinfo);
+    News.updateRead($scope.newsid,userinfo.id,1);
+  };
+  $scope.zan=function(){
+    var userinfo=JSON.parse(localStorage.userinfo);
+    News.updateRead($scope.newsid,userinfo.id,2);
+  };
+  $scope.comment=function(){
+    var userinfo=JSON.parse(localStorage.userinfo);
+    News.updateComment($scope.newsid,userinfo.id,$scope.data.commentinfo);
+  }
+  $scope.fenxiang=function(){
+    alert("分享");
+  };
 })
 
 .controller('ChatsCtrl', function($scope,$state) {

@@ -7,7 +7,7 @@ angular.module('starter.wilddogservices', [])
       var promise = d.promise;
       if(!$scope.run){
         $scope.run=true;
-        $http.jsonp(webapi.wilddog+webapi.wilddogNewsAll)
+        $http.jsonp(webapi.wilddogNewsAll)
         .success(function(data) {
             $scope.pageData=new Array();
             for(obj in data){
@@ -55,7 +55,7 @@ angular.module('starter.wilddogservices', [])
       var d = $q.defer();
       var promise = d.promise;
       if(!$scope.run){
-        $http.jsonp(webapi.wilddog+webapi.wilddogNewsLoadMore($scope.lasttimestamp,$scope.pageindex))
+        $http.jsonp(webapi.wilddogNewsLoadMore($scope.lasttimestamp,$scope.pageindex))
         .success(function(data) {
               var findex=0;
               for(obj in data){
@@ -103,7 +103,7 @@ angular.module('starter.wilddogservices', [])
     get: function($scope,newsId) {
       var d = $q.defer();
       var promise = d.promise;
-      $http.jsonp(webapi.wilddog+webapi.wilddogNewsDetail(newsId))
+      $http.jsonp(webapi.wilddogNewsDetail(newsId))
         .success(function(data) {
             $scope.news=data;
             $scope.newsurl=$sce.trustAsResourceUrl($scope.news.url);
