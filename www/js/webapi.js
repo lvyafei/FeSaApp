@@ -1,8 +1,7 @@
 angular.module('starter.webapi', [])
 .factory('webapi',function($http,$window) {
-	//var _hosts="http://lvyafei1.jsp.jspee.com.cn";
-	var _hosts_portal="http://localhost:9090";
-	var _hosts_crawler="http://localhost:9091";
+	var _hosts_portal="http://lvyafei-fesa.daoapp.io";//"http://localhost:9090";
+	var _hosts_crawler="http://lvyafei-fesa.daoapp.io";//"http://localhost:9091";
 
 	var _crawler_gettoken="/crawler/oauth/token?grant_type=password&client_id=restapp&client_secret=restapp&username=fsmobile&password=fsmobile@20160704";
 	var _crawler_refreshToken="/crawler/oauth/token?grant_type=refresh_token&client_id=restapp&client_secret=restapp&refresh_token=";
